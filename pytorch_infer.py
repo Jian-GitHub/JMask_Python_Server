@@ -161,6 +161,9 @@ def pytorch_inference(model, img_arr):
 
 
 # model = load_pytorch_model('models/face_mask_detection.pth');
+# model = load_pytorch_model('/Users/qi/pythonProject/JMask_Python_Server/model360.pth')
+# print(sys.path[0])
+os.chdir(sys.path[0])
 model = load_pytorch_model('model360.pth')
 # model = load_pytorch_model('FaceMaskDetection-master/models/model360.pth')
 # print("model:")
@@ -239,8 +242,8 @@ def inference(image,
             else:
                 color = (255, 0, 0)
             cv2.rectangle(image, (xmin, ymin), (xmax, ymax), color, 1)
-            # cv2.putText(image, "%s: %.2f" % (id2class[class_id], conf), (xmin - 2, ymin - 2),
-            #             cv2.FONT_HERSHEY_SIMPLEX, 0.8, color)
+            cv2.putText(image, "%s: %.2f" % (id2class[class_id], conf), (xmin - 2, ymin - 2),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.8, color)
         output_info.append([class_id, conf, xmin, ymin, xmax, ymax])
 
     if show_result:
@@ -294,16 +297,20 @@ def deal():
     mode = request.args.get('mode')
     imgdir = request.args.get('imgdir')
     imgdir = base64.b64decode(imgdir).decode('utf-8')
-    print(imgdir)
+    # print(imgdir)
     if mode == 'img':
         img = cv2.imread(imgdir)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         inference(img, show_result=False, target_shape=(360, 360))
         img = Image.fromarray(img)
         output = io.BytesIO()
-        img.save(output, format='JPEG')
+        # img.show()
+        img.save(output, format='JPEG', quality=100)
         hex_data = output.getvalue()
+        # with open('/Users/qi/IdeaProjects/JMask_Server/.AppData/Web/test.jpg', mode='wb') as file:
+        #     file.write(output.getvalue())
         hex_data = base64.b64encode(hex_data).decode("utf-8")
+        output.close()
         return hex_data
         # print(hex_data)
         # print(type(hex_data))
