@@ -294,38 +294,91 @@ app = Flask(__name__)
 
 @app.route('/Mask', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def deal():
-    mode = request.args.get('mode')
-    imgdir = request.args.get('imgdir')
-    imgdir = base64.b64decode(imgdir).decode('utf-8')
-    # print(imgdir)
-    if mode == 'img':
-        img = cv2.imread(imgdir)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        inference(img, show_result=False, target_shape=(360, 360))
-        img = Image.fromarray(img)
-        output = io.BytesIO()
-        # img.show()
-        img.save(output, format='JPEG', quality=100)
-        hex_data = output.getvalue()
-        # with open('/Users/qi/IdeaProjects/JMask_Server/.AppData/Web/test.jpg', mode='wb') as file:
-        #     file.write(output.getvalue())
-        hex_data = base64.b64encode(hex_data).decode("utf-8")
-        output.close()
-        return hex_data
-        # print(hex_data)
-        # print(type(hex_data))
-        # img_data = open('/Users/qi/Downloads/images-2.jpeg', 'rb').read()
-        # response = make_response(img_data)
-        # response.headers['Content-Type'] = 'image/jpeg'
-    else:
-        if imgdir == '0':
-            imgdir = 0
-        run_on_video(imgdir, '', conf_thresh=0.5)
-    return "ok"
+    imgData = request.form['imgData']
+    # print(imgData)
+    # imgData = base64.b64decode(imgData).decode('utf-8')
+    imgData = base64.b64decode(imgData)
+    # print(imgData)
+    # print(" 结束\n\n\n")
+
+    # base64编码
+    # img_data = base64.b64decode(imgData)
+
+    # 转换为np数组
+    img_array = np.fromstring(imgData, np.uint8)
+    # 转换成opencv可用格式
+    img = cv2.imdecode(img_array, cv2.COLOR_BGR2RGB)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+    # img = cv2.imread("/Users/qi/Downloads/test02.jpeg")
+    # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    inference(img, show_result=False, target_shape=(360, 360))
+    img = Image.fromarray(img)
+    output = io.BytesIO()
+    # img.show()
+    img.save(output, format='JPEG', quality=100)
+    hex_data = output.getvalue()
+    # with open('/Users/qi/IdeaProjects/JMask_Server/.AppData/Web/test.jpg', mode='wb') as file:
+    #     file.write(output.getvalue())
+    hex_data = base64.b64encode(hex_data).decode("utf-8")
+    output.close()
+    # print(hex_data)
+    # print(" 结束")
+    return hex_data
+    # return ""
+# mode = request.args.get('mode')
+# imgdir = request.args.get('imgdir')
+# imgdir = base64.b64decode(imgdir).decode('utf-8')
+# imgData = request.args.get('imgData')
+# imgData = base64.b64decode(imgData).decode('utf-8')
+# # print(imgdir)
+# if mode == 'img':
+#     img = cv2.imread(imgdir)
+#     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+#     inference(img, show_result=False, target_shape=(360, 360))
+#     img = Image.fromarray(img)
+#     output = io.BytesIO()
+#     # img.show()
+#     img.save(output, format='JPEG', quality=100)
+#     hex_data = output.getvalue()
+#     # with open('/Users/qi/IdeaProjects/JMask_Server/.AppData/Web/test.jpg', mode='wb') as file:
+#     #     file.write(output.getvalue())
+#     hex_data = base64.b64encode(hex_data).decode("utf-8")
+#     output.close()
+#     return hex_data
+#     # print(hex_data)
+#     # print(type(hex_data))
+#     # img_data = open('/Users/qi/Downloads/images-2.jpeg', 'rb').read()
+#     # response = make_response(img_data)
+#     # response.headers['Content-Type'] = 'image/jpeg'
+# else:
+#     # base64编码
+#     img_data = base64.b64decode(imgData)
+#     # 转换为np数组
+#     img_array = np.fromstring(img_data, np.uint8)
+#     # 转换成opencv可用格式
+#     img = cv2.imdecode(img_array, cv2.COLOR_RGB2BGR)
+#     inference(img, show_result=False, target_shape=(360, 360))
+#     img = Image.fromarray(img)
+#     output = io.BytesIO()
+#     # img.show()
+#     img.save(output, format='JPEG', quality=100)
+#     hex_data = output.getvalue()
+#     # with open('/Users/qi/IdeaProjects/JMask_Server/.AppData/Web/test.jpg', mode='wb') as file:
+#     #     file.write(output.getvalue())
+#     hex_data = base64.b64encode(hex_data).decode("utf-8")
+#     output.close()
+#     return hex_data
+#
+#
+#     # if imgdir == '0':
+#     #     imgdir = 0
+#     # run_on_video(imgdir, '', conf_thresh=0.5)
+# return "Error"
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=9000)
+    app.run(port=5000, host="0.0.0.0")
     # parser = argparse.ArgumentParser(description="Face Mask Detection")
     # parser.add_argument('--img-mode', type=int, default=1, help='set 1 to run on image, 0 to run on video.')
     # parser.add_argument('--img-path', type=str, default='img/demo2.jpg', help='path to your image.')
