@@ -292,7 +292,7 @@ def run_on_video(video_path, output_video_name, conf_thresh):
 app = Flask(__name__)
 
 
-@app.route('/Mask', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@app.route('/Mask', methods=['GET', 'POST'])
 def deal():
     imgData = request.form['imgData']
     # print(imgData)
