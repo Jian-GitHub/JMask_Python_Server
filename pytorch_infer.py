@@ -326,6 +326,8 @@ def deal():
     # print(" 结束")
     return hex_data
     # return ""
+
+
 # mode = request.args.get('mode')
 # imgdir = request.args.get('imgdir')
 # imgdir = base64.b64decode(imgdir).decode('utf-8')
